@@ -9,13 +9,13 @@
 /**
  * The search results page can be themed/customized.
  */
-function theme_google_cse_results() {
+function theme_google_cse_results($form = TRUE) {
   $query = array(
     'q' => isset($_GET['query']) ? $_GET['query'] : '',
     'cx' => variable_get('google_cse_cx', ''),
     'cof' => 'FORID:0',
-  );
-  $output = drupal_get_form('google_cse_results_searchbox_form');
+  ) + google_cse_advanced_settings();
+  $output = $form ? drupal_get_form('google_cse_results_searchbox_form') : '';
   $output .= '<div id="google-cse-results"><noscript>';
   $output .= t('!google, or enable JavaScript to view them here.', array('!google' => l(t('View the results at Google'), 'http://'. variable_get('google_cse_domain', 'www.google.com') .'/cse', array('query' => $query))));
   $output .= '</noscript></div>

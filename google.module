@@ -1,0 +1,47 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Integrates Google Custom Search Engine with the Drupal core search API.
+ */
+
+/**
+ * Implementation of hook_search().
+ */
+function google_search($op = 'search', $keys = NULL) {
+  if (user_access('search Google CSE')) {
+    switch ($op) {
+      case 'name':
+        return google_cse_results_tab();
+      case 'search':
+        drupal_set_title(google_cse_results_title());
+        return array(0);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_search_page().
+ */
+function google_search_page($results) {
+  return theme('google_cse_results', FALSE);
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function google_init() {
+  if (arg(0) == 'search' && arg(1) == 'google' && (is_null(arg(2)) || !isset($_GET['query']))) {
+    if ($_SERVER['REQUEST_METHOD'] != 'POST' && $keys = isset($_GET['query']) ? $_GET['query'] : arg(2)) {
+      drupal_goto('search/google/'. $keys, google_build_query($keys));
+    }
+  }
+}
+
+/**
+ * Build a query array based on Google CSE settings.
+ */
+function google_build_query($keys) {
+  return array('query' => $keys, 'cx' => variable_get('google_cse_cx', ''), 'cof' => 'FORID:11') + google_cse_advanced_settings();
+}

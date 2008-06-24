@@ -1,4 +1,4 @@
 ; $Id$
-name = "Google Co-op CSE"
+name = "Google CSE"
 description = "Use a Google Custom Search Engine to search your site and/or any other sites."
 core = 6.x
