@@ -40,8 +40,38 @@ function google_init() {
 }
 
 /**
+ * Implementation of hook_form_alter().
+ */
+function google_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'search_form' && $form['module']['#value'] == 'google') {
+    if ($sitesearch = variable_get('google_cse_sitesearch', '')) {
+      $form['sitesearch'] = array(
+        '#type' => 'radios',
+        '#options' => array('' => t('Search the web'), $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch))),
+        '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : '',
+      );
+    }
+    $form['#submit'][] = 'google_submit_redirect';
+  }
+}
+
+/**
+ * Redirect form submission to URL with query parameters.
+ */
+function google_submit_redirect($form, &$form_state) {
+  $keys = $form_state['values']['processed_keys'];
+  $sitesearch = isset($form_state['values']['sitesearch']) ? $form_state['values']['sitesearch'] : NULL;
+  $form_state['redirect'] = array('search/google/'. $keys, google_build_query($keys, $sitesearch));
+}
+
+/**
  * Build a query array based on Google CSE settings.
  */
-function google_build_query($keys) {
-  return array('query' => $keys, 'cx' => variable_get('google_cse_cx', ''), 'cof' => 'FORID:11') + google_cse_advanced_settings();
+function google_build_query($keys, $sitesearch = NULL) {
+  return array(
+    'query' => $keys,
+    'cx' => variable_get('google_cse_cx', ''),
+    'cof' => variable_get('google_cse_cof_here', 'FORID:11'),
+    'sitesearch' => isset($sitesearch) ? $sitesearch : (isset($_GET['sitesearch']) ? $_GET['sitesearch'] : ''),
+  ) + google_cse_advanced_settings();
 }

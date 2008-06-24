@@ -43,6 +43,35 @@ function google_cse_admin_settings() {
     '#description' => t('Enter a custom name of the tab where search results are displayed (defaults to %google).', array('%google' => t('Google'))),
     '#default_value' => variable_get('google_cse_results_tab', ''),
   );
+  $form['google_cse_sitesearch'] = array(
+    '#title' => t('SiteSearch domain'),
+    '#type' => 'textfield',
+    '#maxlength' => 50,
+    '#size' => 60, 
+    '#description' => t('If set, users will be presented with the option of searching only on the domain specified rather than using the CSE.'),
+    '#default_value' => variable_get('google_cse_sitesearch', ''),
+  );
+  $form['google_cse_cof_here'] = array(
+    '#title' => t('Ad format on this site'),
+    '#type' => 'radios',
+    '#default_value' => variable_get('google_cse_cof_here', 'FORID:11'),
+    '#options' => array(
+      'FORID:9' => t('Right'),
+      'FORID:10' => t('Top and right'),
+      'FORID:11' => t('Top and bottom'),
+    ),
+    '#description' => t('Ads on the right increase the width of the iframe. Non-profit organizations can disable ads in the Google CSE control panel.'),
+  );
+  $form['google_cse_cof_google'] = array(
+    '#title' => t('Ad format on Google'),
+    '#type' => 'radios',
+    '#default_value' => variable_get('google_cse_cof_google', 'FORID:0'),
+    '#options' => array(
+      'FORID:0' => t('Right'),
+      'FORID:1' => t('Top and bottom'),
+    ),
+    '#description' => t('AdSense ads are also displayed when the CSE links or redirects to Google.'),
+  );
   $form['google_cse_searchbox_width'] = array(
     '#title' => t('Searchbox width'),
     '#type' => 'textfield',

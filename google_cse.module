@@ -77,11 +77,11 @@ function google_cse_searchbox_form_builder(&$form_state, $form_id) {
   // The default form.
   if (variable_get('google_cse_results_display', 'here') == 'here') {
     $form['#action'] = url('search/google');
-    $cof = 'FORID:11';
+    $cof = variable_get('google_cse_cof_here', 'FORID:11');
   }
   else {
     $form['#action'] = 'http://'. variable_get('google_cse_domain', 'www.google.com') .'/cse';
-    $cof = 'FORID:0';
+    $cof = variable_get('google_cse_cof_google', 'FORID:0');
   }
   $form['#method'] = 'get';
   $form['cx'] = array(
@@ -117,6 +117,14 @@ function google_cse_searchbox_form_builder(&$form_state, $form_id) {
       $form['query']['#title'] = t('Enter your keywords');
       $form['sa']['#suffix'] = google_cse_results_gadget();
       break;
+  }
+  // If enabled, add SiteSearch options.
+  if ($sitesearch = variable_get('google_cse_sitesearch', '')) {
+    $form['sitesearch'] = array(
+      '#type' => 'radios',
+      '#options' => array('' => t('Search the web'), $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch))),
+      '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : '',
+    );
   }
   return $form;
 }
