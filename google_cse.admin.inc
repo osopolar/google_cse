@@ -12,7 +12,7 @@
 function google_cse_admin_settings() {
   $form = array();
   $form['google_cse_cx'] = array(
-    '#title' => t('Google Co-op Custom Search Engine ID'),
+    '#title' => t('Google Custom Search Engine ID'),
     '#type' => 'textfield',
     '#default_value' => variable_get('google_cse_cx', ''),
     '#description' => t('Enter your alphanumeric <a target="_blank" href="http://www.google.com/coop/manage/cse/">Google Custom Search Engine ID</a>. Click on control panel and then click on code. The only part you need is the <em>cx</em> value.'),
@@ -50,6 +50,12 @@ function google_cse_admin_settings() {
     '#size' => 60, 
     '#description' => t('If set, users will be presented with the option of searching only on the domain specified rather than using the CSE.'),
     '#default_value' => variable_get('google_cse_sitesearch', ''),
+  );
+  $form['google_cse_sitesearch_default'] = array(
+    '#title' => t('Default to using the SiteSearch domain'),
+    '#type' => 'checkbox',
+    '#description' => t('If set, searches will default to using the SiteSearch domain rather than the CSE.'),
+    '#default_value' => variable_get('google_cse_sitesearch_default', 0),
   );
   $form['google_cse_cof_here'] = array(
     '#title' => t('Ad format on this site'),

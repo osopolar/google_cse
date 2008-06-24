@@ -123,7 +123,7 @@ function google_cse_searchbox_form_builder(&$form_state, $form_id) {
     $form['sitesearch'] = array(
       '#type' => 'radios',
       '#options' => array('' => t('Search the web'), $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch))),
-      '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : '',
+      '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : google_cse_sitesearch(),
     );
   }
   return $form;
@@ -202,4 +202,11 @@ function google_cse_advanced_settings() {
 function google_cse_init() {
   drupal_add_js(drupal_get_path('module', 'google_cse') .'/google_cse.js', 'module', 'footer');
   drupal_add_css(drupal_get_path('module', 'google_cse') .'/google_cse.css');
+}
+
+/**
+ * Returns default SiteSearch selection.
+ */
+function google_cse_sitesearch() {
+  return variable_get('google_cse_sitesearch_default', 0) ? variable_get('google_cse_sitesearch', '') : '';
 }

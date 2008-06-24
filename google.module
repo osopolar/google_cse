@@ -48,7 +48,7 @@ function google_form_alter(&$form, $form_state, $form_id) {
       $form['sitesearch'] = array(
         '#type' => 'radios',
         '#options' => array('' => t('Search the web'), $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch))),
-        '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : '',
+        '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : google_cse_sitesearch(),
       );
     }
     $form['#submit'][] = 'google_submit_redirect';
@@ -72,6 +72,6 @@ function google_build_query($keys, $sitesearch = NULL) {
     'query' => $keys,
     'cx' => variable_get('google_cse_cx', ''),
     'cof' => variable_get('google_cse_cof_here', 'FORID:11'),
-    'sitesearch' => isset($sitesearch) ? $sitesearch : (isset($_GET['sitesearch']) ? $_GET['sitesearch'] : ''),
+    'sitesearch' => isset($sitesearch) ? $sitesearch : (isset($_GET['sitesearch']) ? $_GET['sitesearch'] : google_cse_sitesearch()),
   ) + google_cse_advanced_settings();
 }

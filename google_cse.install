@@ -21,6 +21,8 @@ function google_cse_requirements($phase) {
  * Implementation of hook_uninstall().
  */
 function google_cse_uninstall() {
+  variable_del('google_cse_cof_google');
+  variable_del('google_cse_cof_here');
   variable_del('google_cse_cr'); 
   variable_del('google_cse_cx');
   variable_del('google_cse_domain');
@@ -38,4 +40,6 @@ function google_cse_uninstall() {
   variable_del('google_cse_results_width');
   variable_del('google_cse_safe'); 
   variable_del('google_cse_searchbox_width');
+  variable_del('google_cse_sitesearch');
+  variable_del('google_cse_sitesearch_default');
 }
