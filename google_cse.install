@@ -35,8 +35,9 @@ function google_cse_uninstall() {
   variable_del('google_cse_oe'); 
   variable_del('google_cse_results_display');
   variable_del('google_cse_results_gadget');
-  variable_del('google_cse_results_title');
   variable_del('google_cse_results_searchbox_width');
+  variable_del('google_cse_results_tab');
+  variable_del('google_cse_results_title');
   variable_del('google_cse_results_width');
   variable_del('google_cse_safe'); 
   variable_del('google_cse_searchbox_width');
