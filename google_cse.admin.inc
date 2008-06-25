@@ -40,7 +40,7 @@ function google_cse_admin_settings() {
     '#type' => 'textfield',
     '#maxlength' => 50,
     '#size' => 60, 
-    '#description' => t('Enter a custom name of the tab where search results are displayed (defaults to %google).', array('%google' => t('Google'))),
+    '#description' => t('Enter a custom name of the tab where search results are displayed (defaults to %google). The tab only appears if the Search module is enabled.', array('%google' => t('Google'))),
     '#default_value' => variable_get('google_cse_results_tab', ''),
   );
   $form['google_cse_sitesearch'] = array(
