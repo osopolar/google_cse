@@ -15,7 +15,7 @@ function google_search($op = 'search', $keys = NULL) {
       case 'name':
         return google_cse_results_tab();
       case 'search':
-        drupal_set_title(google_cse_results_title());
+        google_cse_results_set_title();
         return array(0);
     }
   }
@@ -45,11 +45,7 @@ function google_init() {
 function google_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'search_form' && $form['module']['#value'] == 'google') {
     if ($sitesearch = variable_get('google_cse_sitesearch', '')) {
-      $form['sitesearch'] = array(
-        '#type' => 'radios',
-        '#options' => array('' => t('Search the web'), $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch))),
-        '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : google_cse_sitesearch(),
-      );
+      $form['sitesearch'] = google_cse_sitesearch_radios($sitesearch);
     }
     $form['#submit'][] = 'google_submit_redirect';
   }
@@ -72,6 +68,6 @@ function google_build_query($keys, $sitesearch = NULL) {
     'query' => $keys,
     'cx' => variable_get('google_cse_cx', ''),
     'cof' => variable_get('google_cse_cof_here', 'FORID:11'),
-    'sitesearch' => isset($sitesearch) ? $sitesearch : (isset($_GET['sitesearch']) ? $_GET['sitesearch'] : google_cse_sitesearch()),
+    'sitesearch' => isset($sitesearch) ? $sitesearch : google_cse_sitesearch_default(),
   ) + google_cse_advanced_settings();
 }

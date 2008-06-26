@@ -14,7 +14,6 @@ function google_cse_menu() {
     $items['search/google'] = array(
       'access arguments' => array('search Google CSE'),
       'title callback' => 'google_cse_results_tab',
-      'title arguments' => array(),
       'description' => 'Google Custom Search Engine',
       'page callback' => 'google_cse_results', 
       'type' => MENU_LOCAL_TASK,
@@ -36,7 +35,18 @@ function google_cse_menu() {
  * Implementation of hook_theme().
  */
 function google_cse_theme() {
-  return array('google_cse_results' => array('arguments' => array('form' => TRUE, 'self' => FALSE), 'file' => 'google_cse.theme.inc'));
+  return array(
+    'google_cse_results' => array(
+      'arguments' => array('form' => TRUE, 'self' => FALSE),
+      'file' => 'google_cse.theme.inc',
+      'template' => 'google_cse_results',
+    ),
+    'google_cse_results_gadget' => array(
+      'arguments' => array(),
+      'file' => 'google_cse.theme.inc',
+      'template' => 'google_cse_results_gadget',
+    ),
+  );
 }
 
 /**
@@ -121,41 +131,23 @@ function google_cse_searchbox_form_builder(&$form_state, $form_id, $self = FALSE
     case 'google_cse_results_searchbox_form':
       $form['query']['#size'] = variable_get('google_cse_results_searchbox_width', 40);
       $form['query']['#title'] = t('Enter your keywords');
-      $form['sa']['#suffix'] = google_cse_results_gadget();
+      if (variable_get('google_cse_results_gadget', 1)) {
+        $form['sa']['#suffix'] = theme('google_cse_results_gadget');
+      }
       break;
   }
   // If enabled, add SiteSearch options.
   if ($sitesearch = variable_get('google_cse_sitesearch', '')) {
-    $form['sitesearch'] = array(
-      '#type' => 'radios',
-      '#options' => array('' => t('Search the web'), $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch))),
-      '#default_value' => isset($_GET['sitesearch']) ? $_GET['sitesearch'] : google_cse_sitesearch(),
-    );
+    $form['sitesearch'] = google_cse_sitesearch_radios($sitesearch);
   }
   return $form;
-}
-
-/**
- * Display an Add-to-Google button.
- */
-function google_cse_results_gadget() {
-  if (variable_get('google_cse_results_gadget', 1) && $id = explode(':', variable_get('google_cse_cx', ''))) {
-    $output = '<div id="google-cse-results-gadget">';
-    $output .= '<a href="http://fusion.google.com/add?moduleurl=http%3A%2F%2Fwww.google.com%2Fcoop/api/'. $id[0] .'/cse/'. $id[1] .'/gadget">';
-    $output .= '<img src="http://buttons.googlesyndication.com/fusion/add.gif" width="104" height="17" border="0" alt="Add to Google" />';
-    $output .= '</a></div>';
-    return $output;
-  }
-  else {
-    return '';
-  }
 }
 
 /**
  * Render the search page and custom title.
  */
 function google_cse_results() {
-  drupal_set_title(google_cse_results_title());
+  google_cse_results_set_title();
   return theme('google_cse_results');
 }
 
@@ -163,16 +155,14 @@ function google_cse_results() {
  * Return the Google CSE tab title, either a setting or a translation.
  */
 function google_cse_results_tab() {
-  $tab = variable_get('google_cse_results_tab', '');
-  return $tab ? $tab : t('Google');
+  return ($var = variable_get('google_cse_results_tab', '')) ? $var : t('Google');
 }
 
 /**
  * Return the Google CSE page title, either a setting or a translation.
  */
-function google_cse_results_title() {
-  $title = variable_get('google_cse_results_title', '');
-  return $title ? $title : t('Search');
+function google_cse_results_set_title() {
+  drupal_set_title(($var = variable_get('google_cse_results_title', '')) ? check_plain($var) : t('Search'));
 }
 
 /**
@@ -211,8 +201,22 @@ function google_cse_init() {
 }
 
 /**
- * Returns default SiteSearch selection.
+ * Returns SiteSearch options form item.
  */
-function google_cse_sitesearch() {
-  return variable_get('google_cse_sitesearch_default', 0) ? variable_get('google_cse_sitesearch', '') : '';
+function google_cse_sitesearch_radios($sitesearch) {
+  return array(
+    '#type' => 'radios',
+    '#options' => array(
+      '' => ($var = variable_get('google_cse_sitesearch_option', '')) ? check_plain($var) : t('Search the web'),
+      $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch)),
+    ),
+    '#default_value' => google_cse_sitesearch_default(),
+  );
+}
+
+/**
+ * Return SiteSearch default value.
+ */
+function google_cse_sitesearch_default() {
+  return isset($_GET['sitesearch']) ? $_GET['sitesearch'] : (variable_get('google_cse_sitesearch_default', 0) ? variable_get('google_cse_sitesearch', '') : '');
 }

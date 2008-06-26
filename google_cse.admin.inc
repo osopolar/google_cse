@@ -51,6 +51,14 @@ function google_cse_admin_settings() {
     '#description' => t('If set, users will be presented with the option of searching only on the domain specified rather than using the CSE.'),
     '#default_value' => variable_get('google_cse_sitesearch', ''),
   );
+  $form['google_cse_sitesearch_option'] = array(
+    '#title' => t('CSE search option label'),
+    '#type' => 'textfield',
+    '#maxlength' => 50,
+    '#size' => 60, 
+    '#description' => t('Customize the label for CSE search if SiteSearch is enabled (defaults to %search-web).', array('%search-web' => t('Search the web'))),
+    '#default_value' => variable_get('google_cse_sitesearch_option', ''),
+  );
   $form['google_cse_sitesearch_default'] = array(
     '#title' => t('Default to using the SiteSearch domain'),
     '#type' => 'checkbox',

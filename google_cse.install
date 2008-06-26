@@ -43,4 +43,5 @@ function google_cse_uninstall() {
   variable_del('google_cse_searchbox_width');
   variable_del('google_cse_sitesearch');
   variable_del('google_cse_sitesearch_default');
+  variable_del('google_cse_sitesearch_option');
 }
