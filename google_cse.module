@@ -36,7 +36,7 @@ function google_cse_menu() {
  * Implementation of hook_theme().
  */
 function google_cse_theme() {
-  return array('google_cse_results' => array('arguments' => array('form' => TRUE), 'file' => 'google_cse.theme.inc'));
+  return array('google_cse_results' => array('arguments' => array('form' => TRUE, 'self' => FALSE), 'file' => 'google_cse.theme.inc'));
 }
 
 /**
@@ -44,12 +44,18 @@ function google_cse_theme() {
  */
 function google_cse_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
-    $blocks = array();
-    $blocks[] = array('info' => t('Google CSE'));
-    return $blocks;
+    return array(
+      0 => array('info' => t('Google CSE')),
+      1 => array('info' => t('Google CSE results')),
+    );
   }
-  else if ($op == 'view' && user_access('search Google CSE')) {
-    return array('subject' => t('Search'), 'content' => drupal_get_form('google_cse_searchbox_form'));
+  elseif ($op == 'view' && user_access('search Google CSE')) {
+    switch ($delta) {
+      case 0:
+        return array('subject' => t('Search'), 'content' => drupal_get_form('google_cse_searchbox_form'));
+      case 1:
+        return array('subject' => t('Search'), 'content' => theme('google_cse_results', TRUE, TRUE));
+    }
   } 
 }
 
@@ -72,11 +78,11 @@ function google_cse_forms() {
 /**
  * Form builder for the searchbox forms.
  */
-function google_cse_searchbox_form_builder(&$form_state, $form_id) {
+function google_cse_searchbox_form_builder(&$form_state, $form_id, $self = FALSE) {
   $form = array();
   // The default form.
   if (variable_get('google_cse_results_display', 'here') == 'here') {
-    $form['#action'] = url('search/google');
+    $form['#action'] = url($self ? $_GET['q'] : 'search/google');
     $cof = variable_get('google_cse_cof_here', 'FORID:11');
   }
   else {
