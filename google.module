@@ -47,6 +47,9 @@ function google_form_alter(&$form, $form_state, $form_id) {
     if ($sitesearch = variable_get('google_cse_sitesearch', '')) {
       $form['sitesearch'] = google_cse_sitesearch_radios($sitesearch);
     }
+    if (variable_get('google_cse_results_gadget', 1)) {
+      $form['basic']['inline']['submit']['#suffix'] = theme('google_cse_results_gadget');
+    }
     $form['#submit'][] = 'google_submit_redirect';
   }
 }
