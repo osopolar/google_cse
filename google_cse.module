@@ -196,8 +196,10 @@ function google_cse_advanced_settings() {
  * Implementation of hook_init().
  */
 function google_cse_init() {
-  drupal_add_js(drupal_get_path('module', 'google_cse') .'/google_cse.js', 'module', 'footer');
+  global $language;
   drupal_add_css(drupal_get_path('module', 'google_cse') .'/google_cse.css');
+  drupal_add_js(array('googleCSE' => array('language' => $language->language)), 'setting', 'footer');
+  drupal_add_js(drupal_get_path('module', 'google_cse') .'/google_cse.js', 'module', 'footer');
 }
 
 /**

@@ -44,6 +44,7 @@ function google_init() {
  */
 function google_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'search_form' && $form['module']['#value'] == 'google') {
+    drupal_add_js(array('googleCSE' => array('searchForm' => TRUE)), 'setting', 'footer');
     if ($sitesearch = variable_get('google_cse_sitesearch', '')) {
       $form['sitesearch'] = google_cse_sitesearch_radios($sitesearch);
     }

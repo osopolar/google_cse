@@ -2,8 +2,8 @@
 $(function() {
   var googleCSEWatermark = function($id) {
     var f = document.getElementById($id);
-    if (f && (f.query || f.q)) {
-      var q = f.query ? f.query : f.q;
+    if (f && (f.query || f.q || f['edit-keys'])) {
+      var q = f.query ? f.query : (f.q ? f.q : f['edit-keys']);
       var n = navigator;
       var l = location;
       if (n.platform == 'Win32') {
@@ -11,7 +11,7 @@ $(function() {
       }
       var b = function() {
         if (q.value == '') {
-          q.style.background = '#FFFFFF url(http://www.google.com/coop/images/google_custom_search_watermark.gif) left no-repeat';
+          q.style.background = '#FFFFFF url(http://www.google.com/coop/intl/' + Drupal.settings.googleCSE.language + '/images/google_custom_search_watermark.gif) left no-repeat';
         }
       };
       var f = function() {
@@ -26,4 +26,7 @@ $(function() {
   };
   googleCSEWatermark('google-cse-searchbox-form');
   googleCSEWatermark('google-cse-results-searchbox-form');
+  if (Drupal.settings.googleCSE.searchForm) {
+    googleCSEWatermark('search-form');
+  }
 });
