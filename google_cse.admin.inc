@@ -25,7 +25,7 @@ function google_cse_admin_settings() {
       'here' => t('On this site (requires JavaScript)'),
       'google' => t('On Google'),
     ),
-    '#description' => t('Search results can be displayed on this site, using JavaScript, or on Google, which does not require JavaScript. Note: You can also configure your CSE at Google to have the iGoogle widget point to your site, but <strong>that will not work</strong> (see below). This setting only affects your own searchbox.'),
+    '#description' => t('Search results can be displayed on this site, using JavaScript, or on Google, which does not require JavaScript.'),
   );
   $form['google_cse_results_title'] = array(
     '#title' => t('Search results page title'),
@@ -130,7 +130,7 @@ function google_cse_admin_settings() {
     '#title' => t('Search results "Add to Google" Google Gadget'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('google_cse_results_gadget', 1),
-    '#description' => t('If enabled, an "Add to Google" button will be displayed above the search results. For this to function, you must <strong>not</strong> have <a target="_blank" href="http://www.google.com/coop/manage/cse/">configured</a> your CSE results to appear on this site, because Drupal sites are not compatible with the "q" parameter. Search results will still appear on this site for searches originating here.'),
+    '#description' => t('If enabled, an "Add to Google" button will be displayed above the search results.'),
   );
   $form['google_cse_domain'] = array(
     '#title' => t('Search domain'),
