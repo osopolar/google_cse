@@ -15,7 +15,7 @@ function google_cse_admin_settings() {
     '#title' => t('Google Custom Search Engine ID'),
     '#type' => 'textfield',
     '#default_value' => variable_get('google_cse_cx', ''),
-    '#description' => t('Enter your alphanumeric <a target="_blank" href="http://www.google.com/coop/manage/cse/">Google Custom Search Engine ID</a>. Click on control panel and then click on code. The only part you need is the <em>cx</em> value.'),
+    '#description' => t('Enter your alphanumeric <a target="_blank" href="http://www.google.com/coop/manage/cse/">Google Custom Search Engine ID</a> (click on control panel and then click on code; the only part you need is the <em>cx</em> value).'),
   );
   $form['google_cse_results_display'] = array(
     '#title' => t('Display search results'),
