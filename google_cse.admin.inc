@@ -43,6 +43,22 @@ function google_cse_admin_settings() {
     '#description' => t('Enter a custom name of the tab where search results are displayed (defaults to %google). The tab only appears if the Search module is enabled.', array('%google' => t('Google'))),
     '#default_value' => variable_get('google_cse_results_tab', ''),
   );
+  $form['google_cse_results_prefix'] = array(
+    '#title' => t('Search results prefix text'),
+    '#type' => 'textarea',
+    '#cols' => 50,
+    '#rows' => 4,
+    '#description' => t('Enter text to appear on the search page before the search form.'),
+    '#default_value' => variable_get('google_cse_results_prefix', ''),
+  );
+  $form['google_cse_results_suffix'] = array(
+    '#title' => t('Search results suffix text'),
+    '#type' => 'textarea',
+    '#cols' => 50,
+    '#rows' => 4,
+    '#description' => t('Enter text to appear on the search page after the search form and results.'),
+    '#default_value' => variable_get('google_cse_results_suffix', ''),
+  );
   $form['google_cse_sitesearch'] = array(
     '#title' => t('SiteSearch domain'),
     '#type' => 'textfield',

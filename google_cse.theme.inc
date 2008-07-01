@@ -19,6 +19,8 @@ function template_preprocess_google_cse_results(&$variables) {
 
   $variables['results_searchbox_form'] = $variables['form'] ? drupal_get_form('google_cse_results_searchbox_form', $variables['self']) : '';
   $variables['noscript'] = t('!google, or enable JavaScript to view them here.', array('!google' => l(t('View the results at Google'), 'http://'. variable_get('google_cse_domain', 'www.google.com') .'/cse', array('query' => $query))));
+  $variables['prefix'] = filter_xss_admin(variable_get('google_cse_results_prefix', ''));
+  $variables['suffix'] = filter_xss_admin(variable_get('google_cse_results_suffix', ''));
 
   $settings = array(
     'googleCSE' => array(
@@ -34,6 +36,6 @@ function template_preprocess_google_cse_results(&$variables) {
  */
 function template_preprocess_google_cse_results_gadget(&$variables) {
   $cx = explode(':', variable_get('google_cse_cx', ''));
-  $variables['creator'] = check_plain($cx[0]);
-  $variables['id'] = isset($cx[1]) ? check_plain($cx[1]) : '';
+  $variables['creator'] = drupal_urlencode($cx[0]);
+  $variables['id'] = isset($cx[1]) ? drupal_urlencode($cx[1]) : '';
 }

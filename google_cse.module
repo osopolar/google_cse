@@ -125,11 +125,11 @@ function google_cse_searchbox_form_builder(&$form_state, $form_id, $self = FALSE
   // And the small differences between both.
   switch ($form_id) {
     case 'google_cse_searchbox_form':
-      $form['query']['#size'] = variable_get('google_cse_searchbox_width', 15);
+      $form['query']['#size'] = intval(variable_get('google_cse_searchbox_width', 15));
       $form['query']['#attributes']['title'] = t('Enter the terms you wish to search for.');
       break;
     case 'google_cse_results_searchbox_form':
-      $form['query']['#size'] = variable_get('google_cse_results_searchbox_width', 40);
+      $form['query']['#size'] = intval(variable_get('google_cse_results_searchbox_width', 40));
       $form['query']['#title'] = t('Enter your keywords');
       if (variable_get('google_cse_results_gadget', 1)) {
         $form['sa']['#suffix'] = theme('google_cse_results_gadget');

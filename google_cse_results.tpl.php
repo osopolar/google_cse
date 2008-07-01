@@ -2,6 +2,10 @@
 // $Id$
 ?>
 
+<?php if ($prefix): ?>
+  <div class="google-cse-results-prefix"><?php print $prefix; ?></div>
+<?php endif; ?>
+
 <?php print $results_searchbox_form; ?>
 
 <div id="google-cse-results">
@@ -22,3 +26,7 @@
 </script>
 
 <script type="text/javascript" src="http://www.google.com/afsonline/show_afs_search.js"></script>
+
+<?php if ($suffix): ?>
+  <div class="google-cse-results-suffix"><?php print $suffix; ?></div>
+<?php endif; ?>
