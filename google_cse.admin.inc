@@ -61,10 +61,10 @@ function google_cse_admin_settings() {
   );
   $form['google_cse_sitesearch'] = array(
     '#title' => t('SiteSearch domain'),
-    '#type' => 'textfield',
-    '#maxlength' => 50,
-    '#size' => 60, 
-    '#description' => t('If set, users will be presented with the option of searching only on the domain specified rather than using the CSE.'),
+    '#type' => 'textarea',
+    '#cols' => 50,
+    '#rows' => 4,
+    '#description' => t('If set, users will be presented with the option of searching only on the domain(s) specified rather than using the CSE. Enter one domain or URL path followed by a description (e.g. <em>example.com/user Search users</em>) on each line.'),
     '#default_value' => variable_get('google_cse_sitesearch', ''),
   );
   $form['google_cse_sitesearch_option'] = array(
@@ -78,7 +78,7 @@ function google_cse_admin_settings() {
   $form['google_cse_sitesearch_default'] = array(
     '#title' => t('Default to using the SiteSearch domain'),
     '#type' => 'checkbox',
-    '#description' => t('If set, searches will default to using the SiteSearch domain rather than the CSE.'),
+    '#description' => t('If set, searches will default to using the first listed SiteSearch domain rather than the CSE.'),
     '#default_value' => variable_get('google_cse_sitesearch_default', 0),
   );
   $form['google_cse_cof_here'] = array(

@@ -136,10 +136,7 @@ function google_cse_searchbox_form_builder(&$form_state, $form_id, $self = FALSE
       }
       break;
   }
-  // If enabled, add SiteSearch options.
-  if ($sitesearch = variable_get('google_cse_sitesearch', '')) {
-    $form['sitesearch'] = google_cse_sitesearch_radios($sitesearch);
-  }
+  google_cse_sitesearch_form($form);
   return $form;
 }
 
@@ -205,20 +202,38 @@ function google_cse_init() {
 /**
  * Returns SiteSearch options form item.
  */
-function google_cse_sitesearch_radios($sitesearch) {
-  return array(
-    '#type' => 'radios',
-    '#options' => array(
-      '' => ($var = variable_get('google_cse_sitesearch_option', '')) ? check_plain($var) : t('Search the web'),
-      $sitesearch => t('Search %sitesearch', array('%sitesearch' => $sitesearch)),
-    ),
-    '#default_value' => google_cse_sitesearch_default(),
-  );
+function google_cse_sitesearch_form(&$form) {
+  if ($sites = preg_split('/[\n\r]+/', variable_get('google_cse_sitesearch', ''), -1, PREG_SPLIT_NO_EMPTY)) {
+    $type = (count($sites) > 1) ? 'select' : 'radios';
+    foreach ($sites as $site) {
+      $site = preg_split('/[\s]+/', trim($site), 2, PREG_SPLIT_NO_EMPTY);
+      if ($type == 'radios') {
+        // Unlike select options, we need to HTML-escape radio buttons.
+        $options[check_plain($site[0])] = isset($site[1]) ? check_plain($site[1]) : t('Search %sitesearch', array('%sitesearch' => $site[0]));
+      }
+      else {
+        $options[$site[0]] = isset($site[1]) ? $site[1] : t('Search @sitesearch', array('@sitesearch' => $site[0]));
+      }
+    }
+    $form['sitesearch'] = array(
+      '#type' => $type,
+      '#options' => array(
+        '' => ($var = variable_get('google_cse_sitesearch_option', '')) ? (($type == 'radios') ? check_plain($var) : $var) : t('Search the web'),
+      ) + $options,
+      '#default_value' => google_cse_sitesearch_default(),
+      '#weight' => 0.1,
+    );
+    if ($type == 'select') {
+      if (isset($form['sa'])) { 
+        $form['sa']['#weight'] = 10;
+      }
+    }
+  }
 }
 
 /**
  * Return SiteSearch default value.
  */
 function google_cse_sitesearch_default() {
-  return isset($_GET['sitesearch']) ? $_GET['sitesearch'] : (variable_get('google_cse_sitesearch_default', 0) ? variable_get('google_cse_sitesearch', '') : '');
+  return isset($_GET['sitesearch']) ? $_GET['sitesearch'] : (variable_get('google_cse_sitesearch_default', 0) ? array_shift(preg_split('/[\s]+/', variable_get('google_cse_sitesearch', ''))) : '');
 }
