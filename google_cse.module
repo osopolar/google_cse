@@ -208,11 +208,12 @@ function google_cse_sitesearch_form(&$form) {
     foreach ($sites as $site) {
       $site = preg_split('/[\s]+/', trim($site), 2, PREG_SPLIT_NO_EMPTY);
       if ($type == 'radios') {
-        // Unlike select options, we need to HTML-escape radio buttons.
+        // Unlike select options, we need to HTML-escape radios options (both return values and display values).
         $options[check_plain($site[0])] = isset($site[1]) ? check_plain($site[1]) : t('Search %sitesearch', array('%sitesearch' => $site[0]));
       }
       else {
-        $options[$site[0]] = isset($site[1]) ? $site[1] : t('Search @sitesearch', array('@sitesearch' => $site[0]));
+        // Select options will be HTML-escaped for us.
+        $options[$site[0]] = isset($site[1]) ? $site[1] : t('Search !sitesearch', array('!sitesearch' => $site[0]));
       }
     }
     $form['sitesearch'] = array(
@@ -221,12 +222,9 @@ function google_cse_sitesearch_form(&$form) {
         '' => ($var = variable_get('google_cse_sitesearch_option', '')) ? (($type == 'radios') ? check_plain($var) : $var) : t('Search the web'),
       ) + $options,
       '#default_value' => google_cse_sitesearch_default(),
-      '#weight' => 0.1,
     );
-    if ($type == 'select') {
-      if (isset($form['sa'])) { 
-        $form['sa']['#weight'] = 10;
-      }
+    if ($type == 'select' && isset($form['sa'])) { 
+      $form['sa']['#weight'] = 10;
     }
   }
 }

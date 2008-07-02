@@ -172,8 +172,9 @@ function google_cse_admin_settings() {
   $form['advanced']['google_cse_ie'] = array(
     '#title' => t('Input encoding'),
     '#type' => 'textfield',
-    '#default_value' => variable_get('google_cse_ie', ''), 
-    '#description' => t('The default <em>utf8</em> is recommended. See the <a target="_blank" href="http://www.google.com/coop/docs/cse/resultsxml.html#iesp"><em>ie</em> parameter</a>.'),
+    '#default_value' => variable_get('google_cse_ie', 'utf-8'), 
+    '#description' => t('The default <em>utf-8</em> is recommended. See the <a target="_blank" href="http://www.google.com/coop/docs/cse/resultsxml.html#iesp"><em>ie</em> 
+parameter</a>.'),
   );
   $form['advanced']['google_cse_lr'] = array(
     '#title' => t('Language restriction'),
@@ -190,8 +191,8 @@ function google_cse_admin_settings() {
   $form['advanced']['google_cse_oe'] = array(
     '#title' => t('Output encoding'),
     '#type' => 'textfield',
-    '#default_value' => variable_get('google_cse_oe', ''), 
-    '#description' => t('The default <em>utf8</em> is recommended. See the <a target="_blank" href="http://www.google.com/coop/docs/cse/resultsxml.html#oesp"><em>oe</em> parameter</a>.'),
+    '#default_value' => variable_get('google_cse_oe', 'utf-8'), 
+    '#description' => t('The default <em>utf-8</em> is recommended. See the <a target="_blank" href="http://www.google.com/coop/docs/cse/resultsxml.html#oesp"><em>oe</em> parameter</a>.'),
   );
   $form['advanced']['google_cse_safe'] = array(
     '#title' => t('SafeSearch filter'),
