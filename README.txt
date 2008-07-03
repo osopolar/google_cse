@@ -47,9 +47,10 @@ same page (via GET request) and the results will be displayed.
 SITESEARCH
 ----------
 
-In addition to the CSE functionality, SiteSearch on one domain can 
-optionally be configured.  Radio buttons allow users to search on either 
-the SiteSearch or the CSE, and searches can default to either option.
+In addition to the CSE functionality, SiteSearch on one or more domains 
+or URL paths can optionally be configured.  Radio buttons allow users to 
+search on either the SiteSearch option(s) or the CSE, and searches can 
+default to either option.
 
 SEARCH MODULE INTEGRATION
 -------------------------
