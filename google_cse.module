@@ -55,8 +55,8 @@ function google_cse_theme() {
 function google_cse_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
     return array(
-      0 => array('info' => t('Google CSE')),
-      1 => array('info' => t('Google CSE results')),
+      0 => array('info' => t('Google CSE'), 'cache' => BLOCK_NO_CACHE),
+      1 => array('info' => t('Google CSE results'), 'cache' => BLOCK_NO_CACHE),
     );
   }
   elseif ($op == 'view' && user_access('search Google CSE')) {
