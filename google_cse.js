@@ -1,4 +1,3 @@
-// $Id$
 $(function() {
   var googleCSEWatermark = function($id) {
     var f = document.getElementById($id);

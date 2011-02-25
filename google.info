@@ -1,4 +1,3 @@
-; $Id$
 name = Google CSE search
 description = Integrates Google CSE with the Drupal search module API, which enables search logging and allows users to click between available search tabs.
 core = 6.x
