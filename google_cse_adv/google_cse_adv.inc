@@ -10,7 +10,10 @@
  * Sends query to Google's Custom Search Engine and returns response.
  *
  * @param string $keys
+ *   The search terms.
+ *
  * @param int $offset
+ *   The result number to start at.
  *
  * @return string
  *   XML response string.
@@ -28,22 +31,25 @@ function google_cse_adv_service($keys, $offset = 0) {
 
   // Number of results per page. 10 is the default for Google CSE.
   $rows = (int) variable_get('google_cse_adv_results_per_page', 10);
-  // Language interface.
-  $hl = google_cse_adv_param_hl();
-  // Language filtering.
-  $lr = google_cse_adv_param_lr();
-  $url = 'http://www.google.com/cse'
-    . '?cx=' . urlencode(variable_get('google_cse_cx', ''))
-    . '&client=google-csbe'
-    . '&output=xml_no_dtd'
-    . '&filter=1'
-    . ($hl ? '&hl=' . urlencode($hl) : '')
-    . ($lr ? '&lr=' . urlencode($lr) : '')
-    . '&q=' . urlencode($keys)
-    . (isset($_GET['more']) ? '+more:' . urlencode($_GET['more']) : '')
-    . '&num=' . urlencode($rows)
-    . '&start=' . (urlencode($page * $rows) + $offset)
-    . '&as_sitesearch=' . variable_get('google_cse_limit_domain', '');
+
+  $query = array(
+    'cx' => variable_get('google_cse_cx', ''),
+    'client' => 'google-csbe',
+    'output' => 'xml_no_dtd',
+    'filter' => '1',
+    'hl' => google_cse_adv_param_hl(),
+    'lr' => google_cse_adv_param_lr(),
+    'q' => $keys,
+    'num' => $rows,
+    'start' => ($page * $rows) + $offset,
+    'as_sitesearch' => variable_get('google_cse_limit_domain', ''),
+  );
+
+  if (isset($_GET['more'])) {
+    $query['+more:'] = urlencode($_GET['more']);
+  }
+
+  $url = url('http://www.google.com/cse', array('query' => $query));
 
   // Get the google response.
   $response = google_cse_adv_get_response($url);
@@ -56,8 +62,10 @@ function google_cse_adv_service($keys, $offset = 0) {
  * Given the url with the search we try to do, get response from Google.
  *
  * @param string $url
+ *   The Google URL to query.
  *
  * @return string
+ *   The response from Google.
  */
 function google_cse_adv_get_response($url) {
 
@@ -94,8 +102,10 @@ function google_cse_adv_get_response($url) {
  * Returns the thumbnail properly themed.
  *
  * @param array $img
+ *   Image array.
  *
- * @return mixed
+ * @return string
+ *   The HTML for the image.
  */
 function _google_cse_adv_thumbnail($img) {
   return theme('image', array(
@@ -111,6 +121,7 @@ function _google_cse_adv_thumbnail($img) {
  * Returns "hl" language param for search request.
  *
  * @return string
+ *   The language code.
  */
 function google_cse_adv_param_hl() {
 
@@ -127,7 +138,7 @@ function google_cse_adv_param_hl() {
 
 
 /**
- * Returns "hl" language param for search request.
+ * Returns "lr" language param for search request.
  *
  * @return string
  */
@@ -146,9 +157,10 @@ function google_cse_adv_param_lr() {
 /**
  * Function to fetch the results xml from Google.
  *
- * @param  string $response
- * @param  string $keys
- * @param  string $conditions
+ * @param string $response
+ * @param string $keys
+ * @param string $conditions
+ *
  * @return string
  */
 function google_cse_adv_response_results($response, $keys, $conditions) {
@@ -164,14 +176,11 @@ function google_cse_adv_response_results($response, $keys, $conditions) {
     // be higher than this, which messes up our paging. Retain a copy
     // of the original so that themers can still display it.
     // Also, any result beyond pages 8x and 99 tends to repeat themselves, so
-    // they are not relevant. Limited then to 80 pages (800)
-    $max_results = variable_get('google_cse_adv_maximum_results', 800);
+    // they are not relevant. Limited then to 150 pages (1500)
+    $max_results = variable_get('google_cse_adv_maximum_results', 1500);
 
     $total = (int) $xml->RES->M;
     $xml->RES->M_ORIGINAL = $total;
-
-    // We need the inc file here.
-    module_load_include('inc', 'google_cse_adv', 'includes/google_cse_adv');
 
     // Is the result accurate?
     if (!google_cse_adv_result_is_accurate($response)) {
@@ -212,6 +221,7 @@ function google_cse_adv_response_results($response, $keys, $conditions) {
             $extra = $extra['host'];
 
             break;
+
           case "metatags":
             // Clean the string.
             $snippet = google_cse_adv_clean_str((string) $result->S);
@@ -253,25 +263,29 @@ function google_cse_adv_response_results($response, $keys, $conditions) {
       );
     }
 
-    // No pager query was executed - we have to set the pager manually
+    // No pager query was executed - we have to set the pager manually.
     $limit = variable_get('google_cse_adv_results_per_page', 10);
     pager_default_initialize($total, $limit);
 
   }
 
-  // We send the number of results to third modules
+  // Allow other modules to alter the number of results.
   drupal_alter('google_cse_num_results', $total);
 
   return $results;
 }
 
 /**
- * Return if the response from Google is accurate to the exact number of results
- * that the search should have. If not, the number of results
- * which has the search is going to be wrong, and so the pager.
+ * Check Return if the response from Google is accurate.
  *
- * @param  String $response
+ * Google initially estimates the exact number of results
+ * that the search should have.
+ *
+ * @param string $response
+ *   The XML response from Google.
+ *
  * @return bool
+ *   TRUE if the results are considered accurate.
  */
 function google_cse_adv_result_is_accurate($response) {
   $accurate = FALSE;
@@ -290,29 +304,36 @@ function google_cse_adv_result_is_accurate($response) {
 
 /**
  * Get the exact (accurate) number of search results to be used in the pager.
+ *
  * Otherwise, the pager sometimes will show a different number of pages.
  *
- * @param $keys
+ * @param string $keys
+ *   The search keys.
+ *
  * @param $total
+ *   The initial estimated total.
+ *
  * @return int
+ *   The accurate total number of results.
  */
 function google_cse_adv_get_accurate_num_of_results($keys, $total) {
   // If we do not find an accurate result we will use the first one.
   $num_of_results = $total;
-  // We keep this to maximaze the accuracy (as google can return != results).
-  $max_num_result = 9999999999;
+  // We keep this to maximize the accuracy (as google can return != results).
+  $max_num_result = PHP_INT_MAX;
   $result_is_accurate = FALSE;
 
-  // We will use total as first offset.
-  $offset = $total;
-  $max_offset = 600;
-  // Be sure that the results are not being repeated, so no more accuracy possible.
+  $offset = variable_get('google_cse_adv_initial_offset', 400);
+  $max_offset = variable_get('google_cse_adv_maximum_results', 1500);
+  // Check that results are not being repeated, so no more accuracy possible.
   $repeated_results = 0;
-  // Max repetitions before giving up (too much makes the search slower, few unnacurate).
+
+  // Max repetitions before giving up.
+  // Too many makes the search slower, too few makes it inaccurate).
   $max_repetitions = 2;
   $previous_result = 0;
 
-  // Loop while result is not accurate, $offset + 100 (limit to avoid infinite)
+  // Loop while result is not accurate, $offset + 100 (limit to avoid infinite).
   while ((!$result_is_accurate) && ($offset < $max_offset) && ($repeated_results < $max_repetitions)) {
 
     // First, we build the response. The offset will force Google to return.
@@ -320,7 +341,7 @@ function google_cse_adv_get_accurate_num_of_results($keys, $total) {
     $response = google_cse_adv_service($keys, $offset);
 
     $result_is_accurate = google_cse_adv_result_is_accurate($response[0]);
-    $offset = $offset + 100;
+    $offset += 100;
 
     $xml = simplexml_load_string($response[0]);
     if (isset($xml->RES->M)) {
@@ -350,8 +371,11 @@ function google_cse_adv_get_accurate_num_of_results($keys, $total) {
 /**
  * Clean string of html, tags, etc...
  *
- * @param  string $input_str
+ * @param string $input_str
+ *   The original string.
+ *
  * @return string
+ *   The cleaned output.
  */
 function google_cse_adv_clean_str($input_str) {
   $cleaned_str = $input_str;
