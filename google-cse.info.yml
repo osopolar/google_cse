@@ -1,9 +1,0 @@
-name: Google CSE
-description: 
-package: Custom
-type: module
-version: 1.0
-core: 8.x
-dependencies:
-  - node
-configure: example.admin_index
