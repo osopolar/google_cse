@@ -1,9 +1,8 @@
 name: Google CSE
-description: 
+description: Use Google Custom Search to search your site and/or any other sites
 package: Custom
 type: module
-version: 1.0
+version: 2.0
 core: 8.x
 dependencies:
-  - node
-configure: example.admin_index
+  - search
