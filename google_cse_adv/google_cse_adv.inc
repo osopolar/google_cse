@@ -333,9 +333,6 @@ function google_cse_adv_get_accurate_num_of_results($keys, $total) {
   $max_repetitions = 2;
   $previous_result = 0;
 
-  // Allow other modules to alter the keys.
-  drupal_alter('google_cse_searched_keys', $keys);
-
   // Loop while result is not accurate, $offset + 100 (limit to avoid infinite).
   while ((!$result_is_accurate) && ($offset < $max_offset) && ($repeated_results < $max_repetitions)) {
 
