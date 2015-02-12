@@ -5,6 +5,10 @@
  * Uses Google Custom Search Engine (CSE) without frames and ads.
  */
 
+/**
+ * Maximum number of results from a Google search.
+ */
+define('GOOGLE_MAX_SEARCH_RESULTS', 1000);
 
 /**
  * Sends query to Google's Custom Search Engine and returns response.
@@ -41,7 +45,7 @@ function google_cse_adv_service($keys, $offset = 0) {
     'lr' => google_cse_adv_param_lr(),
     'q' => $keys,
     'num' => $rows,
-    'start' => ($page * $rows) + $offset,
+    'start' => ($offset) ? $offset : ($page * $rows),
     'as_sitesearch' => variable_get('google_cse_limit_domain', ''),
   );
 
@@ -305,7 +309,14 @@ function google_cse_adv_result_is_accurate($response) {
 /**
  * Get the exact (accurate) number of search results to be used in the pager.
  *
- * Otherwise, the pager sometimes will show a different number of pages.
+ * Google will never return more than 1000 results for any given search. If a
+ * request for the maximum results is made, Google will return the last page of
+ * the search results with the start and end position as attributes of the results.
+ *
+ * The <RES> tag encapsulates the set of individual search results and details
+ * about those results. The tag attributes are SN (the 1-based index of the first
+ * search result returned in this result set) and EN (the 1-based index of the
+ * last search result).
  *
  * @param string $keys
  *   The search keys.
@@ -317,54 +328,25 @@ function google_cse_adv_result_is_accurate($response) {
  *   The accurate total number of results.
  */
 function google_cse_adv_get_accurate_num_of_results($keys, $total) {
-  // If we do not find an accurate result we will use the first one.
-  $num_of_results = $total;
-  // We keep this to maximize the accuracy (as google can return != results).
-  $max_num_result = PHP_INT_MAX;
-  $result_is_accurate = FALSE;
+  $total_num_results = 0;
+  // Allow other modules to alter the keys.
+  drupal_alter('google_cse_searched_keys', $keys);
 
-  $offset = variable_get('google_cse_adv_initial_offset', 400);
-  $max_offset = variable_get('google_cse_adv_maximum_results', 1500);
-  // Check that results are not being repeated, so no more accuracy possible.
-  $repeated_results = 0;
-
-  // Max repetitions before giving up.
-  // Too many makes the search slower, too few makes it inaccurate).
-  $max_repetitions = 2;
-  $previous_result = 0;
-
-  // Loop while result is not accurate, $offset + 100 (limit to avoid infinite).
-  while ((!$result_is_accurate) && ($offset < $max_offset) && ($repeated_results < $max_repetitions)) {
-
-    // First, we build the response. The offset will force Google to return.
-    // an accurate result.
-    $response = google_cse_adv_service($keys, $offset);
-
-    $result_is_accurate = google_cse_adv_result_is_accurate($response[0]);
-    $offset += 100;
-
-    $xml = simplexml_load_string($response[0]);
-    if (isset($xml->RES->M)) {
-      $num_of_results = (int) $xml->RES->M;
-
-      // Sometimes google gives different results. We will keep the biggest.
-      if ($max_num_result > $num_of_results) {
-        $max_num_result = $num_of_results;
-      }
-
-      if ($num_of_results == $previous_result) {
-        // Leave if the result is the same.
-        $repeated_results += 1;
-      }
-      $previous_result = $num_of_results;
-
-    }
-    else {
-      $offset = $max_offset;
-    }
+  $offset = GOOGLE_MAX_SEARCH_RESULTS - variable_get('google_cse_adv_results_per_page', 10);
+  $response = google_cse_adv_service($keys, $offset);
+  $xml = simplexml_load_string($response[0]);
+  if (isset($xml->RES)) {
+    // Get the 1-based index of the last search result item from the result end
+    // attribute (EN) of the search result tag (RES).
+    $attributes = $xml->RES->attributes();
+    $total_num_results += (int) $attributes['EN'];
   }
 
-  return $max_num_result;
+  // If we do not find an accurate result we will use the initial estimate.
+  if (!$total_num_results) {
+    $total_num_results = $total;
+  }
+  return $total_num_results;
 }
 
 
