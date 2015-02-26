@@ -101,9 +101,8 @@ function google_cse_adv_get_response($url) {
   return $response;
 }
 
-
 /**
- * Returns the thumbnail properly themed.
+ * Returns the thumbnail properly themed if configured to do so.
  *
  * @param array $img
  *   Image array.
@@ -111,14 +110,18 @@ function google_cse_adv_get_response($url) {
  * @return string
  *   The HTML for the image.
  */
-function _google_cse_adv_thumbnail($img) {
-  return theme('image', array(
-    'path' => $img['value'],
-    'alt' => $img['title'],
-    'title' => $img['title'],
-    'attributes' => array('width' => '100px'),
-    'getsize' => FALSE
-  ));
+function _google_cse_adv_thumbnail($title, $image_att) {
+  if (variable_get('google_cse_results_display_images', TRUE)) {
+    return theme('image', array(
+      'path' => isset($image_att['value']) ? $image_att['value'] : '',
+      'alt' => $title,
+      'title' => $title,
+      'attributes' => array('width' => '100px'),
+      'getsize' => FALSE
+    ));
+  }
+
+  return '';
 }
 
 /**
@@ -195,7 +198,6 @@ function google_cse_adv_response_results($response, $keys, $conditions) {
       $xml->RES->M = $total = $max_results;
     }
 
-
     foreach ($xml->RES->R as $result) {
 
       // Clean the text and remove tags.
@@ -210,20 +212,13 @@ function google_cse_adv_response_results($response, $keys, $conditions) {
             // Clean the text.
             $text_snippet = google_cse_adv_clean_str((string) $result->S);
 
-            // Packing image for thumbnail function.
-            $img['title'] = $title;
-            if (isset($image_att['value'])) {
-              $img['value'] = $image_att['value'];
-            }
-
-            $snippet = _google_cse_adv_thumbnail($img) . $text_snippet;
+            // Add a search result image.
+            $snippet = _google_cse_adv_thumbnail($title, $image_att) . $text_snippet;
 
             // Clean the text.
             $extra = google_cse_adv_clean_str((string) $result->U);
-
             $extra = parse_url($extra);
             $extra = $extra['host'];
-
             break;
 
           case "metatags":
@@ -235,7 +230,6 @@ function google_cse_adv_response_results($response, $keys, $conditions) {
 
             $extra = parse_url($extra);
             $extra = $extra['host'] . " | Document";
-
             break;
         }
       }
