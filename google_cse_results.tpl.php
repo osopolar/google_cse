@@ -15,6 +15,8 @@
   </noscript>
 </div>
 
+<gcse:searchresults-only></gcse:searchresults-only>
+
 <?php if ($suffix): ?>
   <div class="google-cse-results-suffix"><?php print $suffix; ?></div>
 <?php endif; ?>

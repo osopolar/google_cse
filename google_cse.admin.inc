@@ -210,7 +210,12 @@ function google_cse_admin_settings() {
     '#default_value' => variable_get('google_cse_safe', ''),
     '#description' => t('SafeSearch filters search results for adult content. See the <a target="_blank" href="http://www.google.com/coop/docs/cse/resultsxml.html#safesp"><em>safe</em> parameter</a>.'),
   );
-
+  $form['google_cse']['advanced']['google_cse_custom_css'] = array(
+    '#title' => t('Stylesheet Override'),
+    '#type' => 'textfield',
+    '#default_value' => variable_get('google_cse_custom_css', ''),
+    '#description' => t('Set your CSE "Look and feel" in <a target="_blank" href="https://www.google.com/cse/lookandfeel/customize?cx='.variable_get('google_cse_cx', '').'">Custom Search settings</a>. Use this field if you need to override or add any styles not allowed in the CSE settings (such as "background-color: none;"). Be sure to include <span style="color:red; font-weight:bold;">!important</span> for overrides.'),
+  );
 
   $form['google_cse_adv'] = array(
     '#title' => t('Google CSE Advanced'),
